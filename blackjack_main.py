@@ -167,6 +167,7 @@ def winner(player, dealer):
             dealer.budget += player.bet
 
 def __main__():
+    game_on = True
     # Start of the game
     dealer = Dealer()
     print("Welcome to a game of Blackjack!")
@@ -174,17 +175,28 @@ def __main__():
     # Initial bets
     print("The player must make the initial bet")
     player1.bet()
-    # First draw
-    player1.begin_play()
-    dealer.begin_play()
-    # Main play
-    while player1.keep_playing is True and player1.bust is False and dealer.bust is False:
-        player1.play()
-        if player1.bust is False:
-            dealer.play()
-    if player1.keep_playing is False and dealer.bust is False and player1.bust is False:
-        # player decided to stop playing but dealer hasn't drawn enough cards yet
-        while dealer.keep_playing is True:
-            dealer.play()
-    winner(player1, dealer)
+    if game_on is True:
+        print("Player's budget is {}".format(player1.budget))
+        print("The Dealer's budget is {}".format(dealer.budget))
+        # First draw
+        player1.begin_play()
+        dealer.begin_play()
+        # Main play
+        while player1.keep_playing is True and player1.bust is False and dealer.bust is False:
+            player1.play()
+            if player1.bust is False:
+                dealer.play()
+        if player1.keep_playing is False and dealer.bust is False and player1.bust is False:
+            # player decided to stop playing but dealer hasn't drawn enough cards yet
+            while dealer.keep_playing is True:
+                dealer.play()
+        winner(player1, dealer)
+        play_on = input("Do you want to play another round? ")
+        if play_on != 'y':
+            game_on = False
+            print("End of game")
+            print("Player's budget is {}".format(player1.budget))
+            print("The Dealer's budget is {}".format(dealer.budget))
+        else:
+            print("Another round of fun!")
 __main__()

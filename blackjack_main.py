@@ -108,6 +108,7 @@ class Dealer(Player):
         self.hide = False
         self.aces = []
         self.bust = False
+        self.keep_playing = True 
         
 
     def check_ace(self):
@@ -134,25 +135,36 @@ class Dealer(Player):
   
     def play(self):
         # Dealer must take cards until his score is 17 or above
-        while self.sum <= 16:
+        if self.sum <= 16:
             card = self.manager.draw()
             if self.manager.is_ace(card.value):
                 self.aces.append(card)
             self.cards.append(card)
             self.sum += card.value
+            print("The Dealer drew a card")
             self.check_bust()
+        else:
+            self.keep_playing = False
 
 def winner(player, dealer):
     if player.bust is True:
         print("Dealer won. Player {} went bust".format(player.name))
+        dealer.budget += player.bet
     elif dealer.bust is True:
         print("The dealer went bust. Player {} won".format(player.name))
+        player.budget += 2*player.bet
+        dealer.budget -= player.bet
 
     else:
-        if player.sum > dealer.sum:
+        if player.sum == dealer.sum:
+            print("DRAW")
+        elif player.sum > dealer.sum:
             print("Player {} won".format(player.name))
+            player.budget += 2*player.bet
+            dealer.budget -= player.bet
         else:
             print("The Dealer won")
+            dealer.budget += player.bet
 
 def __main__():
     # Start of the game
@@ -169,6 +181,10 @@ def __main__():
     while player1.keep_playing is True and player1.bust is False and dealer.bust is False:
         player1.play()
         if player1.bust is False:
+            dealer.play()
+    if player1.keep_playing is False and dealer.bust is False and player1.bust is False:
+        # player decided to stop playing but dealer hasn't drawn enough cards yet
+        while dealer.keep_playing is True:
             dealer.play()
     winner(player1, dealer)
 __main__()

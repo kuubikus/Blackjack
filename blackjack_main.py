@@ -14,19 +14,22 @@ class Card:
 
 
 class Card_manager:
-  def __init__(self):
-    self.available_values = 4*[11] + 4*[10] +4*[2,3,4,5,6,7,8,9]
+    def __init__(self):
+        self.available_values = 4*[11] + 4*[10] +4*[2,3,4,5,6,7,8,9]
 
-  def draw(self):
-    draw = Card(random.choice(self.available_values))
-    self.available_values.pop(draw.value)
-    return draw
+    def reshuffle(self):
+        self.available_values = 4*[11] + 4*[10] +4*[2,3,4,5,6,7,8,9]
+
+    def draw(self):
+        draw = Card(random.choice(self.available_values))
+        self.available_values.pop(draw.value)
+        return draw
   
-  def is_ace(self, value):
-    if value == 11 or value == 1:
-      return True
-    else:
-      return False
+    def is_ace(self, value):
+        if value == 11 or value == 1:
+            return True
+        else:
+            return False
 
 class Player: 
   def __init__(self, name, budget, dealer):
@@ -41,7 +44,7 @@ class Player:
     return "{}'s budget is {}".format(self.name,self.budget)
 
   def bet(self):
-    self.bet = input("How much do you want to bet? ")
+    self.bet = int(input("How much do you want to bet? "))
     self.budget -= self.bet
 
   def begin_play(self):
@@ -60,7 +63,7 @@ class Player:
     if yes:
       card = self.dealer.manager.draw()
       print("You drew a card of value {}". format(card.value))
-      if card.value==11:
+      if card.value == 11:
         ace = input("An Ace! Do you want a value of 1 or 11")
         card.value = ace
       self.cards.append(card)

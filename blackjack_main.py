@@ -50,21 +50,21 @@ class Player:
   def begin_play(self):
     for x in range(2):
       card = self.dealer.manager.draw()
+      print("You drew a card of value {}". format(card.value))
       if card.value == 11:
         ace = input("An Ace! Do you want a value of 1 or 11")
         card.value = ace
       self.cards.append(card)
       self.sum += card.value
-      print("You drew a card of value {}". format(card.value))
     print("Your score is {}".format(self.sum))
 
   def play(self):
-    yes = input("Draw one more card? Enter True if yes.")
-    if yes:
+    yes = input("Draw one more card? Enter y if yes. ")
+    if yes == 'y':
       card = self.dealer.manager.draw()
       print("You drew a card of value {}". format(card.value))
       if card.value == 11:
-        ace = input("An Ace! Do you want a value of 1 or 11")
+        ace = int(input("An Ace! Do you want a value of 1 or 11? "))
         card.value = ace
       self.cards.append(card)
       self.sum += card.value
@@ -98,7 +98,6 @@ class Dealer(Player):
         print("The Dealer's card is hidden")
       else:
         print("Dealer drew a card of value {}". format(card.value))
-        print("The Dealer's score is {}".format(self.sum))
         self.hide = True
   
   def play(self):

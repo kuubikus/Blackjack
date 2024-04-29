@@ -32,46 +32,53 @@ class Card_manager:
             return False
 
 class Player: 
-  def __init__(self, name, budget, dealer):
-    self.name = name
-    self.budget = budget
-    self.dealer = dealer
-    self.cards = []
-    self.sum = 0
-    self.keep_playing = True
+    def __init__(self, name, budget, dealer):
+        self.name = name
+        self.budget = budget
+        self.dealer = dealer
+        self.cards = []
+        self.sum = 0
+        self.keep_playing = True
   
-  def __repr__(self):
-    return "{}'s budget is {}".format(self.name,self.budget)
+    def __repr__(self):
+        return "{}'s budget is {}".format(self.name,self.budget)
 
-  def bet(self):
-    self.bet = int(input("How much do you want to bet? "))
-    self.budget -= self.bet
+    def bet(self):
+        self.bet = int(input("How much do you want to bet? "))
+        self.budget -= self.bet
 
-  def begin_play(self):
-    for x in range(2):
-      card = self.dealer.manager.draw()
-      print("You drew a card of value {}". format(card.value))
-      if card.value == 11:
-        ace = input("An Ace! Do you want a value of 1 or 11")
-        card.value = ace
-      self.cards.append(card)
-      self.sum += card.value
-    print("Your score is {}".format(self.sum))
+    def check_bust(self):
+      if self.sum > 21:
+         self.keep_playing = False
+         print("BUST")
 
-  def play(self):
-    yes = input("Draw one more card? Enter y if yes. ")
-    if yes == 'y':
-      card = self.dealer.manager.draw()
-      print("You drew a card of value {}". format(card.value))
-      if card.value == 11:
-        ace = int(input("An Ace! Do you want a value of 1 or 11? "))
-        card.value = ace
-      self.cards.append(card)
-      self.sum += card.value
-      print("Your points total to {}".format(self.sum))
-    else:
-      print("Your points total to {}".format(self.sum))
-      self.keep_playing = False
+    def begin_play(self):
+        for x in range(2):
+            card = self.dealer.manager.draw()
+            print("You drew a card of value {}". format(card.value))
+            if card.value == 11:
+                ace = input("An Ace! Do you want a value of 1 or 11")
+                card.value = ace
+            self.cards.append(card)
+            self.sum += card.value
+        print("Your score is {}".format(self.sum))
+        self.check_bust()
+
+    def play(self):
+        yes = input("Draw one more card? Enter y if yes. ")
+        if yes == 'y':
+            card = self.dealer.manager.draw()
+            print("You drew a card of value {}". format(card.value))
+            if card.value == 11:
+                ace = int(input("An Ace! Do you want a value of 1 or 11? "))
+                card.value = ace
+            self.cards.append(card)
+            self.sum += card.value
+            print("Your points total to {}".format(self.sum))
+            self.check_bust()
+        else:
+            print("Your points total to {}".format(self.sum))
+            self.keep_playing = False
 
 class Dealer(Player):
   def __init__(self, name='Dealer', budget=1000):
@@ -83,7 +90,7 @@ class Dealer(Player):
     self.hide = False
 
   def ace_value(self,card):
-    if self.sum > 16:
+    if self.sum > 10:
       self.sum -= card.value
       card.change_ace()
       
@@ -99,6 +106,7 @@ class Dealer(Player):
       else:
         print("Dealer drew a card of value {}". format(card.value))
         self.hide = True
+    self.check_bust()
   
   def play(self):
     # Dealer must take cards until his score is 17 or above
@@ -109,6 +117,7 @@ class Dealer(Player):
       self.cards.append(card)
       self.sum += card.value
     print("The Dealer's points total to {}".format(self.sum))
+    self.check_bust()
 
 def winner(player, dealer):
   if player.sum <= 21 and player.sum > dealer.sum or dealer.sum > 21:

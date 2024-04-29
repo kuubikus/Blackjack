@@ -10,6 +10,7 @@ class Card:
     elif self.value == 1:
       self.value = 11
     else:
+      # redundant
       print("Only Aces can have 2 different values!")
 
 
@@ -39,6 +40,7 @@ class Player:
         self.cards = []
         self.sum = 0
         self.keep_playing = True
+        self.bust = False
         self.aces = []
   
     def __repr__(self):
@@ -50,7 +52,7 @@ class Player:
 
     def check_bust(self):
       if self.sum > 21:
-         self.keep_playing = False
+         self.bust = True
          print("BUST")
 
     def check_ace(self):
@@ -72,12 +74,11 @@ class Player:
             if card.value == 11:
                 self.aces.append(card)
 
-            self.check_ace(card, self.aces)
+            self.check_ace()
             self.cards.append(card)
             self.sum += card.value
         print("Your score is {}".format(self.sum))
         self.check_bust()
-    
 
 
     def play(self):
@@ -86,14 +87,14 @@ class Player:
             card = self.dealer.manager.draw()
             print("You drew a card of value {}". format(card.value))
             if card.value == 11:
-                self.no_of_aces += 1
+                self.aces.append(card)
 
-            self.check_ace(card, self.no_of_aces)
+            self.check_ace()
             self.cards.append(card)
             self.sum += card.value
             print("Your points total to {}".format(self.sum))
             self.check_bust()
-        else:
+        if yes != 'y':
             print("Your points total to {}".format(self.sum))
             self.keep_playing = False
 
@@ -106,6 +107,8 @@ class Dealer(Player):
         self.sum = 0
         self.hide = False
         self.aces = []
+        self.bust = False
+        
 
     def check_ace(self):
        # plays ace as 11 and only changes if it is about to go bust
@@ -119,7 +122,7 @@ class Dealer(Player):
             card = self.manager.draw()
             if self.manager.is_ace(card.value):
                 self.ace_value(card)
-
+            self.check_ace()
             self.cards.append(card)
             self.sum += card.value
             if self.hide:
@@ -137,19 +140,19 @@ class Dealer(Player):
                 self.aces.append(card)
             self.cards.append(card)
             self.sum += card.value
-            print("The Dealer's points total to {}".format(self.sum))
             self.check_bust()
 
 def winner(player, dealer):
-    if player.sum <= 21 and player.sum > dealer.sum or dealer.sum > 21:
-        print("{} won".format(player.name))
-        player.budget += player.bet*2
-        dealer.budget -= player.bet
-    elif player.sum <= 21 and player.sum == dealer.sum:
-        print("It's a draw")
+    if player.bust is True:
+        print("Dealer won. Player {} went bust".format(player.name))
+    elif dealer.bust is True:
+        print("The dealer went bust. Player {} won".format(player.name))
+
     else:
-        print("The Dealer won")
-        dealer.budget += player.bet
+        if player.sum > dealer.sum:
+            print("Player {} won".format(player.name))
+        else:
+            print("The Dealer won")
 
 def __main__():
     # Start of the game
@@ -163,9 +166,9 @@ def __main__():
     player1.begin_play()
     dealer.begin_play()
     # Main play
-    while player1.keep_playing:
+    while player1.keep_playing is True and player1.bust is False and dealer.bust is False:
         player1.play()
-    else:
-        dealer.play()
+        if player1.bust is False:
+            dealer.play()
     winner(player1, dealer)
-    __main__()
+__main__()
